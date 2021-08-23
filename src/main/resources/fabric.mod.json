@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "cubicskies",
+  "version": "${version}",
+
+  "name": "Cubic Skies",
+  "description": "Cubic Skies reworks clouds and weather to make them 3D and localized, respectively.",
+  "authors": [
+    "misterslime"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/cubic-skies",
+    "sources": "https://github.com/misterslime/cubicskies-fabric",
+    "issues": "https://github.com/misterslime/cubicskies-fabric/issues"
+  },
+
+  "license": "LGPL",
+  "icon": "assets/cubicskies/icon.png",
+
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "net.misterslime.cubicskies.CubicSkies"
+    ]
+  },
+  "mixins": [
+    "cubicskies.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.11.6",
+    "minecraft": ">=1.17",
+    "java": ">=16"
+  }
+}
