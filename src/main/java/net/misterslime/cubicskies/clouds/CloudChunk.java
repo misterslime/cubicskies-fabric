@@ -6,80 +6,63 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3d;
 import net.minecraft.client.CloudStatus;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.Vec3i;
-import net.minecraft.world.level.levelgen.WorldgenRandom;
-import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-
+import net.misterslime.cubicskies.core.Vec2i;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
-public class CloudHandler {
+public class CloudChunk {
 
-    public static ImprovedNoise noise;
-    public static VertexBuffer cloudBuffer;
-    public static double cloudiness;
-    public static int cloudDistance;
+    public VertexBuffer cloudBuffer;
+    public Vec2i chunkPos;
 
-    private static final List<CloudVoxel> cloudVoxels = new LinkedList<>();
-
-    public static void initClouds() {
-        Random random = new Random();
-        noise = new ImprovedNoise(new WorldgenRandom(random.nextLong()));
-        cloudiness = random.nextDouble();
-        updateCloudDistance();
+    public CloudChunk(int x, int z) {
+        this.cloudBuffer = new VertexBuffer();
+        this.chunkPos = new Vec2i(x, z);
     }
 
-    public static void updateCloudDistance() {
-        cloudDistance = (Minecraft.getInstance().options.renderDistance * 16) / (int) CloudVoxel.CLOUD_BOUNDING_BOX.maxX;
-    }
-
-    public static void resetClouds() {
-        cloudVoxels.clear();
-    }
-
-    public static void generateCloudLayer(double posX, double posY, double posZ) {
+    public void generateCloudLayer() {
         int cloudDepth = (int) Math.floor(172 / CloudVoxel.CLOUD_BOUNDING_BOX.maxY);
+        int cloudDistance = (int) Math.floor(12 / CloudVoxel.CLOUD_BOUNDING_BOX.maxX);
 
-        // to do: actual cloud generation && cloud chunks
-        for (int x = -cloudDistance; x <= cloudDistance; x++) {
+        int xOffset = this.chunkPos.getX() * cloudDistance;
+        int zOffset = this.chunkPos.getX() * cloudDistance;
+
+        List<CloudVoxel> cloudVoxels = new LinkedList<>();
+
+        // to do: actual cloud generation
+        for (int x = 0; x < cloudDistance; x++) {
             for (int y = 0; y < cloudDepth; y++) {
-                for (int z = -cloudDistance; z <= cloudDistance; z++) {
-                    if (noise.noise(x / 16.0, y / 16.0, z / 16.0) * 2.5 >= cloudiness) {
+                for (int z = 0; z < cloudDistance; z++) {
+                    if (CloudHandler.noise.noise((x + xOffset) / 16.0, y / 16.0, (z + zOffset) / 16.0) * 2.5 >= CloudHandler.cloudiness) {
                         cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), false));
                     }
                 }
             }
         }
 
-        buildCloudChunk(posX, posY, posZ);
+        buildCloudChunk(cloudVoxels);
     }
 
-    public static void buildCloudChunk(double posX, double posY, double posZ) {
+    public void buildCloudChunk(List<CloudVoxel> cloudVoxels) {
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        if (cloudBuffer != null) cloudBuffer.close();
-
-        cloudBuffer = new VertexBuffer();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-        int dist = (int) Math.pow(cloudDistance, 2);
         for (CloudVoxel cloudVoxel : cloudVoxels) {
-
-            drawCloudVoxelVertices(bufferBuilder, cloudVoxel.pos, posX, posY, posZ, cloudVoxel.getColor());
+            drawCloudVoxelVertices(bufferBuilder, cloudVoxel.pos, cloudVoxel.getColor());
         }
 
         bufferBuilder.end();
-        cloudBuffer.upload(bufferBuilder);
+        this.cloudBuffer.upload(bufferBuilder);
     }
 
-    private static void drawCloudVoxelVertices(BufferBuilder buffer, Vec3i cubePos, double posX, double posY, double posZ, Vec3 color) {
+    private void drawCloudVoxelVertices(BufferBuilder buffer, Vec3i cubePos, Vec3 color) {
         AABB box = CloudVoxel.CLOUD_BOUNDING_BOX;
         Vector3d cloudPos = new Vector3d(cubePos.getX() * CloudVoxel.CLOUD_BOUNDING_BOX.maxX, cubePos.getY() * CloudVoxel.CLOUD_BOUNDING_BOX.maxY, cubePos.getZ() * CloudVoxel.CLOUD_BOUNDING_BOX.maxZ);
         box = box.move(cloudPos.x, cloudPos.y, cloudPos.z);
@@ -122,19 +105,10 @@ public class CloudHandler {
         buffer.vertex((float) box.maxX, (float) box.minY, (float) box.minZ).color((float) (color.x * 0.9f), (float) (color.y * 0.9f), (float) (color.z * 0.9f), 0.8f).normal(1.0f, 0.0f, 0.0f).endVertex();
     }
 
-    public static void renderVoxelClouds(PoseStack poseStack, Matrix4f model, Vec3 color, double posX, double posY, double posZ, CloudStatus prevCloudsType) {
-        RenderSystem.enableCull();
-        RenderSystem.enableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.depthMask(true);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1.0F);
-        FogRenderer.levelFogColor();
-
+    public void renderCloudChunk(PoseStack poseStack, Matrix4f model, Vec3 color, double posX, double posY, double posZ, CloudStatus prevCloudsType) {
         poseStack.pushPose();
         poseStack.scale(1.0f, 1.0f, 1.0f);
-        poseStack.translate(-posX, posY, -posZ);
+        poseStack.translate(-posX - this.chunkPos.getX() * 12, posY, -posZ - this.chunkPos.getY() * 12);
 
         if (CloudHandler.cloudBuffer != null) {
             int cloudMainIndex = prevCloudsType == CloudStatus.FANCY ? 0 : 1;
@@ -147,39 +121,10 @@ public class CloudHandler {
                 }
 
                 ShaderInstance shader = RenderSystem.getShader();
-                CloudHandler.cloudBuffer.drawWithShader(poseStack.last().pose(), model, shader);
+                this.cloudBuffer.drawWithShader(poseStack.last().pose(), model, shader);
             }
         }
 
         poseStack.popPose();
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.enableCull();
-        RenderSystem.disableBlend();
-    }
-
-    public static void generateCloudChunks(List<CloudChunk> cloudChunks) {
-        for (CloudChunk cloudChunk : cloudChunks) {
-            cloudChunk.generateCloudLayer();
-        }
-    }
-
-    public static void renderCloudChunks(List<CloudChunk> cloudChunks, PoseStack poseStack, Matrix4f model, Vec3 color, double posX, double posY, double posZ, CloudStatus prevCloudsType) {
-        RenderSystem.enableCull();
-        RenderSystem.enableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.depthMask(true);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1.0F);
-        FogRenderer.levelFogColor();
-
-        for (CloudChunk cloudChunk : cloudChunks) {
-            cloudChunk.renderCloudChunk(poseStack, model, color, posX, posY, posZ, prevCloudsType);
-        }
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.enableCull();
-        RenderSystem.disableBlend();
     }
 }

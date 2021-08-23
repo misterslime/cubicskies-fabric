@@ -1,9 +1,12 @@
 package net.misterslime.cubicskies.clouds;
 
 import net.minecraft.core.Vec3i;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class CloudVoxel {
+
+    public static final AABB CLOUD_BOUNDING_BOX = new AABB(0, 0, 0, 4, 3, 4);
 
     public Vec3i pos;
     public boolean rainCloud;
