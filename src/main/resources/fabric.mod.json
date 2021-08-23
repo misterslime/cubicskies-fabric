@@ -14,7 +14,7 @@
     "issues": "https://github.com/misterslime/cubicskies-fabric/issues"
   },
 
-  "license": "LGPL",
+  "license": "LGPL 2.1",
   "icon": "assets/cubicskies/icon.png",
 
   "environment": "client",
