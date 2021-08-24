@@ -1,13 +1,11 @@
 package net.misterslime.cubicskies.mixin;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.misterslime.cubicskies.clouds.CloudHandler;
 import org.jetbrains.annotations.NotNull;
@@ -25,22 +23,8 @@ public final class MixinLevelRenderer {
     @NotNull
     private final Minecraft minecraft;
     @Shadow
-    private int prevCloudX;
-    @Shadow
-    private int prevCloudY;
-    @Shadow
-    private int prevCloudZ;
-    @Shadow
-    @NotNull
-    private Vec3 prevCloudColor;
-    @Shadow
     @NotNull
     private CloudStatus prevCloudsType;
-    @Shadow
-    private boolean generateClouds;
-    @Shadow
-    @NotNull
-    private VertexBuffer cloudBuffer;
     @Unique
     private boolean initializedClouds = false;
     @Unique
@@ -56,6 +40,7 @@ public final class MixinLevelRenderer {
         if (minecraft.level.dimension() == ClientLevel.OVERWORLD) {
             if (!this.initializedClouds) {
                 CloudHandler.initClouds();
+                CloudHandler.clearClouds();
                 this.initializedClouds = true;
             }
             float cloudHeight = DimensionSpecialEffects.OverworldEffects.CLOUD_LEVEL;
@@ -64,31 +49,23 @@ public final class MixinLevelRenderer {
                 double posX = (cameraX + speed);
                 double posY = (cloudHeight - (float) cameraY);
                 Vec3 cloudColor = minecraft.level.getCloudColor(tickDelta);
-                int floorX = (int) Math.floor(posX);
-                int floorY = (int) Math.floor(posY);
-                int floorZ = (int) Math.floor(cameraZ);
-                if (floorX != this.prevCloudX || floorY != this.prevCloudY || floorZ != this.prevCloudZ || this.minecraft.options.getCloudsType() != this.prevCloudsType || this.prevCloudColor.distanceToSqr(cloudColor) > 2.0E-4D) {
-                    this.prevCloudX = floorX;
-                    this.prevCloudY = floorY;
-                    this.prevCloudZ = floorZ;
-                    this.prevCloudColor = cloudColor;
-                    this.prevCloudsType = this.minecraft.options.getCloudsType();
-                    this.generateClouds = true;
-                }
 
                 if (this.minecraft.options.renderDistance != this.prevRenderDistance) {
                     this.prevRenderDistance = this.minecraft.options.renderDistance;
-                    CloudHandler.updateCloudDistance();
-                    CloudHandler.resetClouds();
+                    CloudHandler.clearClouds();
                     this.generatedClouds = false;
                 }
 
-                if (!this.generatedClouds) {
-                    CloudHandler.generateCloudLayer(posX, posY, cameraZ);
-                    this.generatedClouds = true;
+                if (CloudHandler.isCloudChunksNull()) {
+                    if (!this.generatedClouds) {
+                        CloudHandler.generateCloudChunks(posX, cameraZ);
+                        this.generatedClouds = true;
+                    } else {
+                        CloudHandler.renderCloudChunks(poseStack, model, cloudColor, posX, posY, cameraZ, this.prevCloudsType);
+                    }
+                } else {
+                    CloudHandler.clearClouds();
                 }
-
-                CloudHandler.renderVoxelClouds(poseStack, model, cloudColor, posX, posY, cameraZ, this.prevCloudsType);
             }
         }
     }

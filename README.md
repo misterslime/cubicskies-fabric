@@ -44,7 +44,7 @@ ___
 **Voxel Clouds:**
 - [x] Clouds generate in three dimensions now instead of on a plane. 
 - [x] Dynamic, procedurally generated cloud shapes based on noise.
-- [ ] Add cloud chunks so I only have to draw the cloud vertices once. Cloud chunks would be 4 x 57 x 4 cloud voxels large.
+- [x] Add cloud chunks so I only have to draw the cloud vertices once. Cloud chunks would be 4 x 57 x 4 cloud voxels large.
 - [ ] Cloud chunks generate as you move.
 - [ ] Cloud cover changes by editing the variables used to generate new clouds. Clouds that are already generated never change shape. 
 - [ ] Make cloud shapes look good and base them on [real world cloud types](https://en.wikipedia.org/wiki/List_of_cloud_types).

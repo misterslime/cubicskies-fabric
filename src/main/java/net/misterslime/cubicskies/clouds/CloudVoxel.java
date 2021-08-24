@@ -16,10 +16,6 @@ public class CloudVoxel {
         this.rainCloud = rainCloud;
     }
 
-    public CloudVoxel(int x, int y, int z, boolean rainCloud) {
-        this(new Vec3i(x, y, z), rainCloud);
-    }
-
     public Vec3 getColor() {
         return this.rainCloud ? new Vec3(0.62f, 0.62f, 0.62f) : new Vec3(1f, 1f, 1f);
     }

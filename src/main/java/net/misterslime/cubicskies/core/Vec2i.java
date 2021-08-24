@@ -28,4 +28,24 @@ public class Vec2i {
         this.y = n;
         return this;
     }
+
+    public void set(Vec2i vec2i) {
+        this.x = vec2i.x;
+        this.y = vec2i.y;
+    }
+
+    public void set(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void scale(double scale) {
+        this.x *= scale;
+        this.y *= scale;
+    }
+
+    public void add(Vec2i vec2i) {
+        this.x += vec2i.x;
+        this.y += vec2i.y;
+    }
 }
