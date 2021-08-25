@@ -18,16 +18,14 @@ import java.util.List;
 public class CloudChunk {
 
     public VertexBuffer cloudBuffer;
-    public Vec2i chunkPos;
 
-    public CloudChunk(int x, int z) {
+    public CloudChunk() {
         this.cloudBuffer = new VertexBuffer();
-        this.chunkPos = new Vec2i(x, z);
     }
 
-    public void generateClouds(Vec2i cloudPos) {
-        int xOffset = cloudPos.getX() * 4 + this.chunkPos.getX() * 4;
-        int zOffset = cloudPos.getY() * 4 + this.chunkPos.getY() * 4;
+    public void generateCloudChunk(Vec2i cloudPos, Vec2i chunkPos) {
+        int xOffset = cloudPos.getX() * 4 + chunkPos.getX() * 4;
+        int zOffset = cloudPos.getY() * 4 + chunkPos.getY() * 4;
 
         List<CloudVoxel> cloudVoxels = new LinkedList<>();
 
@@ -47,7 +45,7 @@ public class CloudChunk {
 
     public void buildCloudChunk(List<CloudVoxel> cloudVoxels, int xOffset, int zOffset) {
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_NORMAL);
 
         for (CloudVoxel cloudVoxel : cloudVoxels) {
             drawCloudVoxelVertices(bufferBuilder, cloudVoxel.pos, cloudVoxel.getColor(), xOffset, zOffset);
@@ -100,10 +98,10 @@ public class CloudChunk {
 
     }
 
-    public void renderCloudChunk(PoseStack poseStack, Matrix4f model, Vec3 color, double posX, double posY, double posZ, CloudStatus prevCloudsType) {
+    public void renderCloudChunk(PoseStack poseStack, Matrix4f model, Vec2i chunkPos, double posX, double posY, double posZ, CloudStatus prevCloudsType) {
         poseStack.pushPose();
         poseStack.scale(1.0f, 1.0f, 1.0f);
-        poseStack.translate(-posX + this.chunkPos.getX() * 16, posY, -posZ + this.chunkPos.getY() * 16);
+        poseStack.translate(-posX + CloudHandler.prevCloudPos.getX() * 16 + chunkPos.getX() * 16, posY, -posZ + CloudHandler.prevCloudPos.getY() * 16 + chunkPos.getY() * 16);
 
         if (this.cloudBuffer != null) {
             int cloudMainIndex = prevCloudsType == CloudStatus.FANCY ? 0 : 1;

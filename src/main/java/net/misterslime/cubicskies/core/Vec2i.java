@@ -48,4 +48,12 @@ public class Vec2i {
         this.x += vec2i.x;
         this.y += vec2i.y;
     }
+
+    public void addX(int x) {
+        this.x += x;
+    }
+
+    public void addY(int y) {
+        this.y += y;
+    }
 }

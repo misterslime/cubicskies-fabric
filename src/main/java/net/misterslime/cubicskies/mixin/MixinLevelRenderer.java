@@ -58,11 +58,12 @@ public final class MixinLevelRenderer {
 
                 if (CloudHandler.isCloudChunksNull()) {
                     if (!this.generatedClouds) {
-                        CloudHandler.generateCloudChunks(posX, cameraZ);
+                        CloudHandler.generateClouds(posX, cameraZ);
                         this.generatedClouds = true;
                     } else {
-                        CloudHandler.renderCloudChunks(poseStack, model, cloudColor, posX, posY, cameraZ, this.prevCloudsType);
+                        CloudHandler.updateClouds(posX, cameraZ);
                     }
+                    CloudHandler.renderClouds(poseStack, model, cloudColor, posX, posY, cameraZ, this.prevCloudsType);
                 } else {
                     CloudHandler.clearClouds();
                 }

@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3d;
 import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
@@ -13,15 +12,14 @@ import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
 import net.minecraft.world.phys.Vec3;
 import net.misterslime.cubicskies.core.Vec2i;
+import org.lwjgl.system.CallbackI;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 public class CloudHandler {
 
-    public static Vec2i cloudStartPos;
-    public static Vec2i cloudPos;
+    public static Vec2i prevCloudPos;
+    public static Vec2i cloudOffsetPos;
     public static ImprovedNoise noise;
     public static double cloudiness;
 
@@ -31,6 +29,7 @@ public class CloudHandler {
         Random random = new Random();
         noise = new ImprovedNoise(new WorldgenRandom(random.nextLong()));
         cloudiness = random.nextDouble();
+        cloudOffsetPos = new Vec2i(0, 0);
     }
 
     public static void clearClouds() {
@@ -39,26 +38,113 @@ public class CloudHandler {
     }
 
     public static void updateClouds(double posX, double posZ) {
-        cloudPos = new Vec2i((int) Math.floor(posX / 16), (int) Math.floor(posZ / 16));
+        int cloudDistance = Minecraft.getInstance().options.renderDistance;
+        Vec2i cloudPos = new Vec2i((int) Math.floor(posX / 16), (int) Math.floor(posZ / 16));
+
+        if (!prevCloudPos.equals(cloudPos)) {
+            Vec2i posDelta = new Vec2i(cloudPos.getX() - prevCloudPos.getX(), cloudPos.getY() - prevCloudPos.getY());
+
+            prevCloudPos = cloudPos;
+
+            cloudOffsetPos.addX(posDelta.getX());
+            if (posDelta.getX() >= 1) {
+                // Generate new chunks
+                CloudChunk[] newCloudChunks = new CloudChunk[cloudDistance * 2];
+                for (int z = -cloudDistance; z < cloudDistance; z++) {
+                    CloudChunk cloudChunk = new CloudChunk();
+                    cloudChunk.generateCloudChunk(prevCloudPos, new Vec2i((cloudChunks.length / 2) - 1, z));
+                    newCloudChunks[z + cloudDistance] = cloudChunk;
+                }
+
+                // Move array
+                CloudChunk[][] newCloudChunksArray = new CloudChunk[cloudChunks.length][];
+                int j = 0;
+                for(int i = 0; i < newCloudChunksArray.length; i++) {
+                    if(i != 0)
+                    {
+                        newCloudChunksArray[j] = cloudChunks[i];
+                        j++;
+                    }
+                }
+                newCloudChunksArray[cloudChunks.length - 1] = newCloudChunks;
+                cloudChunks = newCloudChunksArray;
+            } else if (posDelta.getX() <= -1) {
+                // Generate new chunks
+                CloudChunk[] newCloudChunks = new CloudChunk[cloudDistance * 2];
+                for (int z = -cloudDistance; z < cloudDistance; z++) {
+                    CloudChunk cloudChunk = new CloudChunk();
+                    cloudChunk.generateCloudChunk(prevCloudPos, new Vec2i((cloudChunks.length / 2), z));
+                    newCloudChunks[z + cloudDistance] = cloudChunk;
+                }
+
+                // Move array
+                CloudChunk[][] newCloudChunksArray = new CloudChunk[cloudChunks.length][];
+                for(int i = 0; i < newCloudChunksArray.length; i++) {
+                    if(i != cloudChunks.length - 1)
+                    {
+                        newCloudChunksArray[i + 1] = cloudChunks[i];
+                    }
+                }
+                newCloudChunksArray[0] = newCloudChunks;
+                cloudChunks = newCloudChunksArray;
+            }
+
+            cloudOffsetPos.addY(posDelta.getY());
+            if (posDelta.getY() >= 1) {
+                for (int x = -cloudDistance; x < cloudDistance; x++) {
+                    // Generate new chunks
+                    CloudChunk cloudChunk = new CloudChunk();
+                    cloudChunk.generateCloudChunk(prevCloudPos, new Vec2i(x, (cloudChunks.length / 2) - 1));
+
+                    // Move array
+                    CloudChunk[] newCloudChunksArray = new CloudChunk[cloudChunks[x + cloudDistance].length];
+                    int j = 0;
+                    for(int i = 0; i < newCloudChunksArray.length; i++) {
+                        if(i != 0)
+                        {
+                            newCloudChunksArray[j] = cloudChunks[x + cloudDistance][i];
+                            j++;
+                        }
+                    }
+                    newCloudChunksArray[cloudChunks.length - 1] = cloudChunk;
+                    cloudChunks[x + cloudDistance] = newCloudChunksArray;
+                }
+            } else if  (posDelta.getY() <= -1) {
+                for (int x = -cloudDistance; x < cloudDistance; x++) {
+                    // Generate new chunks
+                    CloudChunk cloudChunk = new CloudChunk();
+                    cloudChunk.generateCloudChunk(prevCloudPos, new Vec2i(x, (cloudChunks.length / 2)));
+
+                    // Move array
+                    CloudChunk[] newCloudChunksArray = new CloudChunk[cloudChunks[x + cloudDistance].length];
+                    for(int i = 0; i < newCloudChunksArray.length; i++) {
+                        if(i != cloudChunks.length - 1)
+                        {
+                            newCloudChunksArray[i + 1] = cloudChunks[x + cloudDistance][i];
+                        }
+                    }
+                    newCloudChunksArray[0] = cloudChunk;
+                    cloudChunks[x + cloudDistance] = newCloudChunksArray;
+                }
+            }
+        }
     }
 
-    public static void generateCloudChunks(double posX, double posZ) {
+    public static void generateClouds(double posX, double posZ) {
         int cloudDistance = cloudChunks.length / 2;
-        updateClouds(posX, posZ);
+        prevCloudPos = new Vec2i((int) Math.floor(posX / 16), (int) Math.floor(posZ / 16));
 
         // to do: actual cloud generation
         for (int x = -cloudDistance; x < cloudDistance; x++) {
             for (int z = -cloudDistance; z < cloudDistance; z++) {
-                CloudChunk cloudChunk = new CloudChunk(x, z);
-                cloudChunk.generateClouds(cloudPos);
+                CloudChunk cloudChunk = new CloudChunk();
+                cloudChunk.generateCloudChunk(prevCloudPos, new Vec2i(x, z));
                 cloudChunks[x + cloudDistance][z + cloudDistance] = cloudChunk;
             }
         }
-
-        cloudStartPos = new Vec2i(0, 0);
     }
 
-    public static void renderCloudChunks(PoseStack poseStack, Matrix4f model, Vec3 color, double posX, double posY, double posZ, CloudStatus prevCloudsType) {
+    public static void renderClouds(PoseStack poseStack, Matrix4f model, Vec3 color, double posX, double posY, double posZ, CloudStatus prevCloudsType) {
         RenderSystem.enableCull();
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
@@ -68,9 +154,10 @@ public class CloudHandler {
         RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1.0F);
         FogRenderer.levelFogColor();
 
-        for (CloudChunk[] cloudChunkArray : cloudChunks) {
-            for (CloudChunk cloudChunk : cloudChunkArray) {
-                cloudChunk.renderCloudChunk(poseStack, model, color, posX, posY, posZ, prevCloudsType);
+        int cloudDistance = cloudChunks.length / 2;
+        for (int x = -cloudDistance; x < cloudDistance; x++) {
+            for (int z = -cloudDistance; z < cloudDistance; z++) {
+                cloudChunks[x + cloudDistance][z + cloudDistance].renderCloudChunk(poseStack, model, new Vec2i(x, z), posX, posY, posZ, prevCloudsType);
             }
         }
 
