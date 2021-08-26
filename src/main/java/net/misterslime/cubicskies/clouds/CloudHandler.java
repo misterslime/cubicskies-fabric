@@ -7,7 +7,6 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
-import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
 import net.minecraft.world.phys.Vec3;
@@ -109,7 +108,7 @@ public class CloudHandler {
                     newCloudChunksArray[cloudChunks.length - 1] = cloudChunk;
                     cloudChunks[x + cloudDistance] = newCloudChunksArray;
                 }
-            } else if  (posDelta.getY() <= -1) {
+            } else if (posDelta.getY() <= -1) {
                 for (int x = -cloudDistance; x < cloudDistance; x++) {
                     // Generate new chunks
                     CloudChunk cloudChunk = new CloudChunk();
