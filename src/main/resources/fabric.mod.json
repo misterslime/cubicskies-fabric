@@ -17,7 +17,7 @@
   "license": "LGPL 2.1",
   "icon": "assets/cubicskies/icon.png",
 
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
     "main": [
       "net.misterslime.cubicskies.CubicSkies"

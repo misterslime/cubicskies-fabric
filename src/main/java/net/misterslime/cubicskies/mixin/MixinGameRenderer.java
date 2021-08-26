@@ -33,8 +33,6 @@ public abstract class MixinGameRenderer {
 
     @Inject(method = "reloadShaders", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/client/renderer/GameRenderer;shutdownShaders()V"), cancellable = true)
     private void reloadShaders(ResourceManager resourceManager, CallbackInfo ci) throws IOException {
-        //list2.add(Pair.of(new ShaderInstance(resourceManager, "rendertype_clouds", DefaultVertexFormat.POSITION_COLOR_NORMAL), (Consumer<ShaderInstance>) Shaders::setRendertypeClouds));
-
         Pair pair = Pair.of(new ShaderInstance(resourceManager, "rendertype_clouds", DefaultVertexFormat.POSITION_COLOR_NORMAL), (Consumer<ShaderInstance>) Shaders::setRendertypeClouds);
 
         ShaderInstance shaderInstance = (ShaderInstance)Pair.unbox(pair).getFirst();
