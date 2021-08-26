@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.*;
 import net.minecraft.world.phys.Vec3;
+import net.misterslime.cubicskies.client.Shaders;
 import net.misterslime.cubicskies.clouds.CloudHandler;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.*;
@@ -16,19 +17,11 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(LevelRenderer.class)
 public final class MixinLevelRenderer {
 
-    @Shadow
-    private final int ticks;
-    @Final
-    @Shadow
-    @NotNull
-    private final Minecraft minecraft;
-    @Shadow
-    @NotNull
-    private CloudStatus prevCloudsType;
-    @Unique
-    private boolean initializedClouds = false;
-    @Unique
-    private boolean generatedClouds = false;
+    @Shadow private final int ticks;
+    @Final @Shadow @NotNull private final Minecraft minecraft;
+    @Shadow @NotNull private CloudStatus prevCloudsType;
+    @Unique private boolean initializedClouds = false;
+    @Unique private boolean generatedClouds = false;
     private int prevRenderDistance;
 
     public MixinLevelRenderer() {
@@ -63,7 +56,9 @@ public final class MixinLevelRenderer {
                     } else {
                         CloudHandler.updateClouds(posX, cameraZ);
                     }
-                    CloudHandler.renderClouds(poseStack, model, cloudColor, posX, posY, cameraZ, this.prevCloudsType);
+                    if (Shaders.getRendertypeClouds() != null) {
+                        CloudHandler.renderClouds(poseStack, model, cloudColor, posX, posY, cameraZ, this.prevCloudsType);
+                    }
                 } else {
                     CloudHandler.clearClouds();
                 }

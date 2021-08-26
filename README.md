@@ -38,7 +38,7 @@ The biggest difference between Fabulous Clouds and Cubic Skies is that Fabulous 
 ___
 
 **Fixes and Technical Changes:**
-- [ ] Fix the fog shader.
+- [x] Fix the fog shader.
 - [ ] Clouds are server-side instead of client-side.
 
 **Voxel Clouds:**

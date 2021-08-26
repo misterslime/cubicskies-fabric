@@ -7,12 +7,12 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
 import net.minecraft.world.phys.Vec3;
+import net.misterslime.cubicskies.client.Shaders;
 import net.misterslime.cubicskies.core.Vec2i;
-import org.lwjgl.system.CallbackI;
 
 import java.util.Random;
 
@@ -150,7 +150,7 @@ public class CloudHandler {
         RenderSystem.enableDepthTest();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(true);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(Shaders::getRendertypeClouds);
         RenderSystem.setShaderColor((float) color.x, (float) color.y, (float) color.z, 1.0F);
         FogRenderer.levelFogColor();
 
