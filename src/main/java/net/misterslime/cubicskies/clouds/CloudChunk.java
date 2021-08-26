@@ -14,6 +14,7 @@ import net.misterslime.cubicskies.core.Vec2i;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 public class CloudChunk {
 
@@ -28,12 +29,13 @@ public class CloudChunk {
         int zOffset = cloudPos.getY() * 4 + chunkPos.getY() * 4;
 
         List<CloudVoxel> cloudVoxels = new LinkedList<>();
+        Random random = new Random();
 
         // to do: actual cloud generation
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 57; y++) {
                 for (int z = 0; z < 4; z++) {
-                    if (CloudHandler.noise.noise((x + xOffset) / 16.0, y / 16.0, (z + zOffset) / 16.0) * 2.5 >= CloudHandler.cloudiness) {
+                    if (CloudHandler.noise.noise((x + xOffset) / 16.0, y / 16.0, (z + zOffset) / 16.0) * 2.5 >= CloudHandler.cloudiness + random.nextDouble() / 10) {
                         cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), false));
                     }
                 }
