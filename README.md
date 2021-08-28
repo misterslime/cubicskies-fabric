@@ -14,6 +14,8 @@ Cubic Skies is my second mod, and the first one to change vanilla gameplay inste
 
 At their greatest height range—which would be during a thunderstorm—clouds go from normal cloud height to y300 (y192 - y364 in 1.18) meaning that clouds are 172 blocks tall at their max.
 
+Cubic Skies uses [KdotJPG's OpenSimplex2](https://github.com/KdotJPG/OpenSimplex2) for rain/fair cloud region cell value assignment. OpenSimplex2 is provided under [The Unlicense](https://github.com/KdotJPG/OpenSimplex2/blob/master/UNLICENSE).
+
 ### Why not make Cubic Skies a part of Fabulous Clouds instead of it's own mod?
 
 There are many reasons why voxel clouds and the weather rework aren't a part of Fabulous clouds, but here are most of the main ones:
