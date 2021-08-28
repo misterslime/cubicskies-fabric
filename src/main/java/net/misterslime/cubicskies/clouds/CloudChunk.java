@@ -49,21 +49,21 @@ public class CloudChunk {
                     boolean rainCloud = !(voronoiEval < 0.5);
                     double cloudRandom = (random.nextDouble() - random.nextDouble()) / 16.0;
 
-                    if (CloudHandler.noise.noise((x + xOffset) / 16.0, y / 16.0, (z + zOffset) / 16.0) * 2.5 < 0.6 + cloudRandom / 2.0) {
+                    if (CloudHandler.noise.noise3_Classic((x + xOffset) / 16.0, y / 16.0, (z + zOffset) / 16.0) * 2.5 < 0.6 + cloudRandom / 2.0) {
                         continue;
                     }
 
                     if (y < 3) {
-                        if (CloudHandler.noise.noise((x + xOffset) / 8.0, y / 4.0, (z + zOffset) / 8.0) * 2.5 >= (1 - y * 0.166) + cloudRandom) {
+                        if (CloudHandler.noise.noise3_Classic((x + xOffset) / 8.0, y / 4.0, (z + zOffset) / 8.0) * 2.5 >= (1 - y * 0.166) + cloudRandom) {
                             cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), rainCloud));
                         }
                     } else if (y < 15) {
-                        if (CloudHandler.noise.noise((x + xOffset) / 8.0, y / 4.0, (z + zOffset) / 8.0) * 2.5 >= 0.5 + cloudRandom) {
+                        if (CloudHandler.noise.noise3_Classic((x + xOffset) / 8.0, y / 4.0, (z + zOffset) / 8.0) * 2.5 >= 0.5 + cloudRandom) {
                             cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), rainCloud));
                         }
                     } else {
                         int yScale = y - 14;
-                        if (CloudHandler.noise.noise((x + xOffset) / 8.0, y / 4.0, (z + zOffset) / 8.0) * 2.5 >= (0.5 + yScale * 0.166) + cloudRandom) {
+                        if (CloudHandler.noise.noise3_Classic((x + xOffset) / 8.0, y / 4.0, (z + zOffset) / 8.0) * 2.5 >= (0.5 + yScale * 0.166) + cloudRandom) {
                             cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), rainCloud));
                         }
                     }

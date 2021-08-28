@@ -7,10 +7,9 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
-import net.minecraft.world.level.levelgen.WorldgenRandom;
-import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
 import net.minecraft.world.phys.Vec3;
 import net.misterslime.cubicskies.client.Shaders;
+import net.misterslime.cubicskies.clouds.gen.OpenSimplex2F;
 import net.misterslime.cubicskies.clouds.gen.VoronoiNoise;
 import net.misterslime.cubicskies.core.Vec2i;
 
@@ -20,7 +19,7 @@ public class CloudHandler {
 
     public static Vec2i prevCloudPos;
     public static Vec2i cloudOffsetPos;
-    public static ImprovedNoise noise;
+    public static OpenSimplex2F noise;
     public static VoronoiNoise voronoi;
     public static double cloudiness;
 
@@ -28,7 +27,7 @@ public class CloudHandler {
 
     public static void initClouds() {
         Random random = new Random();
-        noise = new ImprovedNoise(new WorldgenRandom(random.nextLong()));
+        noise = new OpenSimplex2F(random.nextLong());
         cloudiness = random.nextDouble();
         cloudOffsetPos = new Vec2i(0, 0);
     }
