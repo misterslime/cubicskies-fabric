@@ -24,16 +24,16 @@ public class CloudChunk {
     }
 
     public void generateCloudChunk(Vec2i cloudPos, Vec2i chunkPos) {
-        int xOffset = cloudPos.getX() * 4 + chunkPos.getX() * 4;
-        int zOffset = cloudPos.getY() * 4 + chunkPos.getY() * 4;
+        int xOffset = cloudPos.getX() * 8 + chunkPos.getX() * 8;
+        int zOffset = cloudPos.getY() * 8 + chunkPos.getY() * 8;
 
         List<CloudVoxel> cloudVoxels = new LinkedList<>();
         Random random = new Random();
 
         // to do: actual cloud generation
-        for (int x = 0; x < 4; x++) {
+        for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 18 /*57*/; y++) {
-                for (int z = 0; z < 4; z++) {
+                for (int z = 0; z < 8; z++) {
                     double cloudRandom = (random.nextDouble() - random.nextDouble()) / 16.0;
 
                     if (CloudHandler.noise.noise((x + xOffset) / 16.0, y / 16.0, (z + zOffset) / 16.0) * 2.5 < 0.6 + cloudRandom / 2.0) {
@@ -119,7 +119,7 @@ public class CloudChunk {
     public void renderCloudChunk(PoseStack poseStack, Matrix4f model, Vec2i chunkPos, double posX, double posY, double posZ, CloudStatus prevCloudsType) {
         poseStack.pushPose();
         poseStack.scale(1.0f, 1.0f, 1.0f);
-        poseStack.translate(-posX + CloudHandler.prevCloudPos.getX() * 16 + chunkPos.getX() * 16, posY, -posZ + CloudHandler.prevCloudPos.getY() * 16 + chunkPos.getY() * 16);
+        poseStack.translate(-posX + CloudHandler.prevCloudPos.getX() * 32 + chunkPos.getX() * 32, posY, -posZ + CloudHandler.prevCloudPos.getY() * 32 + chunkPos.getY() * 32);
 
         if (this.cloudBuffer != null) {
             int cloudMainIndex = prevCloudsType == CloudStatus.FANCY ? 0 : 1;

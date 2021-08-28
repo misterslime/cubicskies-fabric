@@ -33,12 +33,12 @@ public class CloudHandler {
 
     public static void clearClouds() {
         int cloudDistance = Minecraft.getInstance().options.renderDistance;
-        cloudChunks = new CloudChunk[cloudDistance * 2][cloudDistance * 2];
+        cloudChunks = new CloudChunk[cloudDistance][cloudDistance];
     }
 
     public static void updateClouds(double posX, double posZ) {
-        int cloudDistance = Minecraft.getInstance().options.renderDistance;
-        Vec2i cloudPos = new Vec2i((int) Math.floor(posX / 16), (int) Math.floor(posZ / 16));
+        int cloudDistance = Minecraft.getInstance().options.renderDistance / 2;
+        Vec2i cloudPos = new Vec2i((int) Math.floor(posX / 32), (int) Math.floor(posZ / 32));
 
         if (!prevCloudPos.equals(cloudPos)) {
             Vec2i posDelta = new Vec2i(cloudPos.getX() - prevCloudPos.getX(), cloudPos.getY() - prevCloudPos.getY());
@@ -131,7 +131,7 @@ public class CloudHandler {
 
     public static void generateClouds(double posX, double posZ) {
         int cloudDistance = cloudChunks.length / 2;
-        prevCloudPos = new Vec2i((int) Math.floor(posX / 16), (int) Math.floor(posZ / 16));
+        prevCloudPos = new Vec2i((int) Math.floor(posX / 32), (int) Math.floor(posZ / 32));
 
         // to do: actual cloud generation
         for (int x = -cloudDistance; x < cloudDistance; x++) {
