@@ -11,6 +11,7 @@ import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
 import net.minecraft.world.phys.Vec3;
 import net.misterslime.cubicskies.client.Shaders;
+import net.misterslime.cubicskies.clouds.gen.VoronoiNoise;
 import net.misterslime.cubicskies.core.Vec2i;
 
 import java.util.Random;
@@ -20,6 +21,7 @@ public class CloudHandler {
     public static Vec2i prevCloudPos;
     public static Vec2i cloudOffsetPos;
     public static ImprovedNoise noise;
+    public static VoronoiNoise voronoi;
     public static double cloudiness;
 
     private static CloudChunk[][] cloudChunks;
@@ -145,7 +147,8 @@ public class CloudHandler {
 
     public static void renderClouds(PoseStack poseStack, Matrix4f model, Vec3 color, double posX, double posY, double posZ, CloudStatus prevCloudsType) {
         RenderSystem.enableCull();
-        RenderSystem.enableBlend();
+        //RenderSystem.enableBlend();
+        RenderSystem.disableBlend();
         RenderSystem.enableDepthTest();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(true);

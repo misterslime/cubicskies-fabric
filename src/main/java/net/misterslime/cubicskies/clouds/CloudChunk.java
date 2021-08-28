@@ -1,14 +1,19 @@
 package net.misterslime.cubicskies.clouds;
 
+import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3d;
 import net.minecraft.client.CloudStatus;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.Vec3i;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.misterslime.cubicskies.clouds.gen.VoronoiNoise;
 import net.misterslime.cubicskies.core.Vec2i;
 
 import java.util.LinkedList;
@@ -26,14 +31,22 @@ public class CloudChunk {
     public void generateCloudChunk(Vec2i cloudPos, Vec2i chunkPos) {
         int xOffset = cloudPos.getX() * 8 + chunkPos.getX() * 8;
         int zOffset = cloudPos.getY() * 8 + chunkPos.getY() * 8;
+        double renderDistance = (double) Minecraft.getInstance().options.renderDistance;
 
         List<CloudVoxel> cloudVoxels = new LinkedList<>();
         Random random = new Random();
 
+        if (CloudHandler.voronoi == null) {
+            CloudHandler.voronoi = new VoronoiNoise(0);
+        }
+
         // to do: actual cloud generation
         for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 18 /*57*/; y++) {
-                for (int z = 0; z < 8; z++) {
+            for (int z = 0; z < 8; z++) {
+                double voronoiEval = CloudHandler.voronoi.sample((x + xOffset) / renderDistance, (z + zOffset) / renderDistance);
+
+                for (int y = 0; y < 18 /*57*/; y++) {
+                    boolean rainCloud = !(voronoiEval < 0.5);
                     double cloudRandom = (random.nextDouble() - random.nextDouble()) / 16.0;
 
                     if (CloudHandler.noise.noise((x + xOffset) / 16.0, y / 16.0, (z + zOffset) / 16.0) * 2.5 < 0.6 + cloudRandom / 2.0) {
@@ -42,16 +55,16 @@ public class CloudChunk {
 
                     if (y < 3) {
                         if (CloudHandler.noise.noise((x + xOffset) / 8.0, y / 4.0, (z + zOffset) / 8.0) * 2.5 >= (1 - y * 0.166) + cloudRandom) {
-                            cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), false));
+                            cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), rainCloud));
                         }
                     } else if (y < 15) {
                         if (CloudHandler.noise.noise((x + xOffset) / 8.0, y / 4.0, (z + zOffset) / 8.0) * 2.5 >= 0.5 + cloudRandom) {
-                            cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), false));
+                            cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), rainCloud));
                         }
                     } else {
                         int yScale = y - 14;
                         if (CloudHandler.noise.noise((x + xOffset) / 8.0, y / 4.0, (z + zOffset) / 8.0) * 2.5 >= (0.5 + yScale * 0.166) + cloudRandom) {
-                            cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), false));
+                            cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), rainCloud));
                         }
                     }
                 }
