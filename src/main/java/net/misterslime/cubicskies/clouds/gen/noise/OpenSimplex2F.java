@@ -1,4 +1,4 @@
-package net.misterslime.cubicskies.clouds.gen;
+package net.misterslime.cubicskies.clouds.gen.noise;
 
 /**
  * K.jpg's OpenSimplex 2, faster variant

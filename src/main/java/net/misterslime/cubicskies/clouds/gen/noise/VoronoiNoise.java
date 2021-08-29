@@ -1,4 +1,4 @@
-package net.misterslime.cubicskies.clouds.gen;
+package net.misterslime.cubicskies.clouds.gen.noise;
 
 import com.mojang.datafixers.util.Pair;
 import net.misterslime.cubicskies.core.Vector2d;

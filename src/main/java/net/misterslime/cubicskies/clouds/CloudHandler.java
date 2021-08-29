@@ -9,8 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.world.phys.Vec3;
 import net.misterslime.cubicskies.client.Shaders;
-import net.misterslime.cubicskies.clouds.gen.OpenSimplex2F;
-import net.misterslime.cubicskies.clouds.gen.VoronoiNoise;
+import net.misterslime.cubicskies.clouds.gen.noise.OpenSimplex2F;
+import net.misterslime.cubicskies.clouds.gen.noise.VoronoiNoise;
 import net.misterslime.cubicskies.core.Vec2i;
 
 import java.util.Random;

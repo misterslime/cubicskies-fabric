@@ -1,6 +1,5 @@
 package net.misterslime.cubicskies.clouds;
 
-import com.mojang.authlib.minecraft.client.MinecraftClient;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
@@ -9,11 +8,9 @@ import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.Vec3i;
-import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.misterslime.cubicskies.clouds.gen.VoronoiNoise;
+import net.misterslime.cubicskies.clouds.gen.noise.VoronoiNoise;
 import net.misterslime.cubicskies.core.Vec2i;
 
 import java.util.LinkedList;
