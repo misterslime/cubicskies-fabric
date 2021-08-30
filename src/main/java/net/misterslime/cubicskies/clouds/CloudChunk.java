@@ -5,21 +5,24 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3d;
 import net.minecraft.client.CloudStatus;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.misterslime.cubicskies.api.CloudCover;
+import net.misterslime.cubicskies.clouds.cover.*;
 import net.misterslime.cubicskies.clouds.gen.noise.VoronoiNoise;
 import net.misterslime.cubicskies.core.Vec2i;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 public class CloudChunk {
 
     public VertexBuffer cloudBuffer;
+    public CloudCover cloudCover;
+
+    private int rainClouds;
 
     public CloudChunk() {
         this.cloudBuffer = new VertexBuffer();
@@ -28,41 +31,32 @@ public class CloudChunk {
     public void generateCloudChunk(Vec2i cloudPos, Vec2i chunkPos) {
         int xOffset = cloudPos.getX() * 8 + chunkPos.getX() * 8;
         int zOffset = cloudPos.getY() * 8 + chunkPos.getY() * 8;
-        double renderDistance = (double) Minecraft.getInstance().options.renderDistance;
 
         List<CloudVoxel> cloudVoxels = new LinkedList<>();
-        Random random = new Random();
 
         if (CloudHandler.voronoi == null) {
             CloudHandler.voronoi = new VoronoiNoise(0, 32);
         }
 
-        // to do: actual cloud generation
+        double voronoiEval = CloudHandler.voronoi.sample((cloudPos.getX() + chunkPos.getX()) / 512f, (cloudPos.getY() + chunkPos.getY()) / 512f);
+
+        this.cloudCover = new Cloudy();
+        switch ((int) Math.ceil(voronoiEval * 5)) {
+            case 1 -> this.cloudCover = new Clear();
+            case 2 -> this.cloudCover = new Cloudy();
+            case 3 -> this.cloudCover = new Overcast();
+            case 4 -> this.cloudCover = new Rain();
+            case 5 -> this.cloudCover = new Thunderstorm();
+        }
+
         for (int x = 0; x < 8; x++) {
             for (int z = 0; z < 8; z++) {
-                double voronoiEval = CloudHandler.voronoi.sample(x + xOffset, z + zOffset);
-
                 for (int y = 0; y < 57; y++) {
-                    boolean rainCloud = !(voronoiEval < 0.5);
-                    double cloudRandom = (random.nextDouble() - random.nextDouble()) / 16.0;
-
-                    if (CloudHandler.noise.noise3_Classic((x + xOffset) / 32.0, y / 32.0, (z + zOffset) / 32.0) * 2.5 < 0.4 + cloudRandom / 2.0) {
-                        continue;
-                    }
-
-                    if (y < 3) {
-                        if (CloudHandler.noise.noise3_Classic((x + xOffset) / 16.0, y / 16.0, (z + zOffset) / 16.0) * 2.5 >= (1 - y * 0.166) + cloudRandom) {
-                            cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), rainCloud));
-                        }
-                    } else if (y < 54) {
-                        if (CloudHandler.noise.noise3_Classic((x + xOffset) / 16.0, y / 16.0, (z + zOffset) / 16.0) * 2.5 >= 0.5 + cloudRandom) {
-                            cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), rainCloud));
-                        }
-                    } else {
-                        int yScale = y - 53;
-                        if (CloudHandler.noise.noise3_Classic((x + xOffset) / 16.0, y / 16.0, (z + zOffset) / 16.0) * 2.5 >= (0.5 + yScale * 0.166) + cloudRandom) {
-                            cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), rainCloud));
-                        }
+                    if (this.cloudCover.placeFairCloud(x + xOffset, y, z + zOffset)) {
+                        cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), false));
+                    } else if (this.cloudCover.placeRainCloud(x + xOffset, y, z + zOffset)) {
+                        cloudVoxels.add(new CloudVoxel(new Vec3i(x, y, z), true));
+                        rainClouds++;
                     }
                 }
             }

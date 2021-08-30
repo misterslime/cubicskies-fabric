@@ -1,11 +1,5 @@
 package net.misterslime.cubicskies.clouds.gen.noise;
 
-import com.mojang.datafixers.util.Pair;
-import net.misterslime.cubicskies.core.Vector2d;
-
-import java.util.HashSet;
-import java.util.Set;
-
 public class VoronoiNoise {
 
     final FastNoiseLite fastNoiseLite;
