@@ -1,4 +1,4 @@
-package net.misterslime.cubicskies.mixin;
+package net.misterslime.cubicskies.mixin.client;
 
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
@@ -39,7 +39,7 @@ public final class MixinLevelRenderer {
             float cloudHeight = DimensionSpecialEffects.OverworldEffects.CLOUD_LEVEL;
             if (!Float.isNaN(cloudHeight)) {
                 double speed = ((this.ticks + tickDelta) * 0.03F);
-                double posX = (cameraX + speed);
+                double posX = (cameraX + CloudHandler.speed);
                 double posY = (cloudHeight - (float) cameraY);
                 Vec3 cloudColor = minecraft.level.getCloudColor(tickDelta);
 

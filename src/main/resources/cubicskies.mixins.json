@@ -4,10 +4,11 @@
   "package": "net.misterslime.cubicskies.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "MixinServerLevel"
   ],
   "client": [
-    "MixinGameRenderer",
-    "MixinLevelRenderer"
+    "client.MixinGameRenderer",
+    "client.MixinLevelRenderer"
   ],
   "injectors": {
     "defaultRequire": 1

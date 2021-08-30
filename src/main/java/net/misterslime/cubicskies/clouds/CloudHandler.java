@@ -22,6 +22,7 @@ public class CloudHandler {
     public static OpenSimplex2F noise;
     public static VoronoiNoise voronoi;
     public static double cloudiness;
+    public static double speed = 0;
 
     private static CloudChunk[][] cloudChunks;
 

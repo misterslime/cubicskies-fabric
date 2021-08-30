@@ -1,4 +1,4 @@
-package net.misterslime.cubicskies.mixin;
+package net.misterslime.cubicskies.mixin.client;
 
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
