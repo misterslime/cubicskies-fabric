@@ -34,13 +34,13 @@ public class CloudChunk {
         Random random = new Random();
 
         if (CloudHandler.voronoi == null) {
-            CloudHandler.voronoi = new VoronoiNoise(0);
+            CloudHandler.voronoi = new VoronoiNoise(0, 32);
         }
 
         // to do: actual cloud generation
         for (int x = 0; x < 8; x++) {
             for (int z = 0; z < 8; z++) {
-                double voronoiEval = CloudHandler.voronoi.sample((x + xOffset) / renderDistance, (z + zOffset) / renderDistance);
+                double voronoiEval = CloudHandler.voronoi.sample(x + xOffset, z + zOffset);
 
                 for (int y = 0; y < 57; y++) {
                     boolean rainCloud = !(voronoiEval < 0.5);
