@@ -1,9 +1,6 @@
 package net.misterslime.cubicskies.clouds.cover;
 
 import net.misterslime.cubicskies.api.CloudCover;
-import net.misterslime.cubicskies.clouds.CloudHandler;
-
-import java.util.Random;
 
 public class Clear implements CloudCover {
 

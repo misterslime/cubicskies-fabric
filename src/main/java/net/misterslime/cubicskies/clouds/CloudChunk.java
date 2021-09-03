@@ -10,6 +10,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.misterslime.cubicskies.api.CloudCover;
+import net.misterslime.cubicskies.client.CloudRenderer;
 import net.misterslime.cubicskies.clouds.cover.*;
 import net.misterslime.cubicskies.clouds.gen.noise.VoronoiNoise;
 import net.misterslime.cubicskies.core.Vec2i;
@@ -34,11 +35,11 @@ public class CloudChunk {
 
         List<CloudVoxel> cloudVoxels = new LinkedList<>();
 
-        if (CloudHandler.voronoi == null) {
-            CloudHandler.voronoi = new VoronoiNoise(0, 32);
+        if (CloudRenderer.voronoi == null) {
+            CloudRenderer.voronoi = new VoronoiNoise(0, 32);
         }
 
-        double voronoiEval = CloudHandler.voronoi.sample((cloudPos.getX() + chunkPos.getX()) / 512f, (cloudPos.getY() + chunkPos.getY()) / 512f);
+        double voronoiEval = CloudRenderer.voronoi.sample((cloudPos.getX() + chunkPos.getX()) / 512f, (cloudPos.getY() + chunkPos.getY()) / 512f);
 
         this.cloudCover = new Cloudy();
         switch ((int) Math.ceil(voronoiEval * 5)) {
@@ -123,7 +124,7 @@ public class CloudChunk {
     public void renderCloudChunk(PoseStack poseStack, Matrix4f model, Vec2i chunkPos, double posX, double posY, double posZ, CloudStatus prevCloudsType) {
         poseStack.pushPose();
         poseStack.scale(1.0f, 1.0f, 1.0f);
-        poseStack.translate(-posX + CloudHandler.prevCloudPos.getX() * 32 + chunkPos.getX() * 32, posY, -posZ + CloudHandler.prevCloudPos.getY() * 32 + chunkPos.getY() * 32);
+        poseStack.translate(-posX + CloudRenderer.prevCloudPos.getX() * 32 + chunkPos.getX() * 32, posY, -posZ + CloudRenderer.prevCloudPos.getY() * 32 + chunkPos.getY() * 32);
 
         if (this.cloudBuffer != null) {
             int cloudMainIndex = prevCloudsType == CloudStatus.FANCY ? 0 : 1;

@@ -1,4 +1,4 @@
-package net.misterslime.cubicskies.client;
+package net.misterslime.cubicskies.client.shader;
 
 import net.minecraft.client.renderer.ShaderInstance;
 import org.jetbrains.annotations.Nullable;

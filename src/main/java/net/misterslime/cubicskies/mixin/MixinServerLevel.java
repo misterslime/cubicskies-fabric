@@ -2,7 +2,7 @@ package net.misterslime.cubicskies.mixin;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.ServerLevelData;
-import net.misterslime.cubicskies.clouds.CloudHandler;
+import net.misterslime.cubicskies.client.CloudRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,6 +22,6 @@ public class MixinServerLevel {
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tickClouds(BooleanSupplier booleanSupplier, CallbackInfo ci) {
-        CloudHandler.speed = this.serverLevelData.getGameTime() * 0.03f;
+        CloudRenderer.speed = this.serverLevelData.getGameTime() * 0.03f;
     }
 }

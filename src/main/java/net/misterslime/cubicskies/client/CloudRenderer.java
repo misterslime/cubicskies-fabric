@@ -1,4 +1,4 @@
-package net.misterslime.cubicskies.clouds;
+package net.misterslime.cubicskies.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -8,14 +8,15 @@ import net.minecraft.client.CloudStatus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FogRenderer;
 import net.minecraft.world.phys.Vec3;
-import net.misterslime.cubicskies.client.Shaders;
+import net.misterslime.cubicskies.client.shader.Shaders;
+import net.misterslime.cubicskies.clouds.CloudChunk;
 import net.misterslime.cubicskies.clouds.gen.noise.OpenSimplex2F;
 import net.misterslime.cubicskies.clouds.gen.noise.VoronoiNoise;
 import net.misterslime.cubicskies.core.Vec2i;
 
 import java.util.Random;
 
-public class CloudHandler {
+public class CloudRenderer {
 
     public static Vec2i prevCloudPos;
     public static Vec2i cloudOffsetPos;
