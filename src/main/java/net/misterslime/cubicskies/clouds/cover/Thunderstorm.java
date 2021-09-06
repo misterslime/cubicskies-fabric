@@ -1,5 +1,6 @@
 package net.misterslime.cubicskies.clouds.cover;
 
+import net.minecraft.client.Minecraft;
 import net.misterslime.cubicskies.api.CloudCover;
 import net.misterslime.cubicskies.client.CloudRenderer;
 
@@ -14,7 +15,7 @@ public class Thunderstorm implements CloudCover {
 
     @Override
     public boolean placeRainCloud(int x, int y, int z) {
-        Random random = new Random();
+        Random random = new Random(Minecraft.getInstance().getSingleplayerServer().overworld().getSeed());
         double cloudRandom = (random.nextDouble() - random.nextDouble()) / 16.0;
 
         if (y < 11) {

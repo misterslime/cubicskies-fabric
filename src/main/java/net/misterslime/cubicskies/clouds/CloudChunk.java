@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3d;
 import net.minecraft.client.CloudStatus;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.AABB;
@@ -36,7 +37,7 @@ public class CloudChunk {
         List<CloudVoxel> cloudVoxels = new LinkedList<>();
 
         if (CloudRenderer.voronoi == null) {
-            CloudRenderer.voronoi = new VoronoiNoise(0, 32);
+            CloudRenderer.voronoi = new VoronoiNoise((int) Minecraft.getInstance().getSingleplayerServer().overworld().getSeed(), 32);
         }
 
         double voronoiEval = CloudRenderer.voronoi.sample((cloudPos.getX() + chunkPos.getX()) / 512f, (cloudPos.getY() + chunkPos.getY()) / 512f);

@@ -28,8 +28,8 @@ public class CloudRenderer {
     private static CloudChunk[][] cloudChunks;
 
     public static void initClouds() {
-        Random random = new Random();
-        noise = new OpenSimplex2F(random.nextLong());
+        Random random = new Random(Minecraft.getInstance().getSingleplayerServer().overworld().getSeed());
+        noise = new OpenSimplex2F(Minecraft.getInstance().getSingleplayerServer().overworld().getSeed());
         cloudiness = random.nextDouble();
         cloudOffsetPos = new Vec2i(0, 0);
     }
